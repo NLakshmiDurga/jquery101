@@ -11,46 +11,226 @@
 	</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="card">
+		<div class="container" style="padding-top: 30px;">
+			<div class="card"  style="padding-top: 30px; align-items: 20px;">
+				<button type="button" class="btn btn-primary addBtn" style="width: 50%; margin-left: 20px">Add</button>
 				<div class="row arrCls card-body "></div>
 			</div>
 		</div>
+		<div class="container" style="padding-top: 30px;">
+			<div class="card addForm" style="display: none; padding: 30px;">
+				<h1>Add Details</h1>
+				<form>
+					<div class='form-group'>
+						<input type='hidden' name='uniqueId' class='form-control' id='uniqueId' value="">
+					</div>
+					<div class="form-group">
+						<label for="label">Label</label>
+						<input type="text" name="label" class="form-control" id="label" placeholder="Label">
+					</div>
+					<div class="form-group">
+						<label for="logo">Logo</label>
+						<input type="text" name="logo" class="form-control" id="logo" placeholder="Logo">
+					</div>
+					<div class="form-group">
+						<label for="title">Title</label>
+						<input type="text" name="title" class="form-control" id="title" placeholder="Title">
+					</div>
+					<button type="submit" class="btn btn-success submitForm">Submit</button>
+					<button type="cancel" class="btn btn-danger cancelForm">cancel</button>
+				</form>
+			</div>
+		</div>
+		<div class="container" style="padding-top: 10px;">
+			<div class="card delconf" style="display: none; padding: 10px;">
+				<h1>Confirm Delete</h1>
+				<form>
+					<p>Are you sure you want to delete ?</p>
+					<button type="submit" class="btn btn-success yesBtn">Yes</button>
+					<button type="cancel" class="btn btn-danger noBtn">No</button>
+				</form>
+			</div>
+		</div>
 		<script>
+		var editMode = false;
+		var deleteMode = false;
+		var addMode = false;
+		var editItem;
+		var rowId;
 		const apps = [
 			{
+				"uniqueId":"1234",
 				"label":"AmplifySCIM1",
-				"logo":"https://URL1",
+				"logo":"https://cdn.pixabay.com/photo/2016/02/28/12/55/boy-1226964_960_720.jpg",
 				"title":"AmplifySCIM1"
 			},
 			{
+				"uniqueId":"5678",
 				"label":"AmplifySCIM2",
-				"logo":"https://URL2",
+				"logo":"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
 				"title":"AmplifySCIM2"
 			},
 			{
+				"uniqueId":"6254",
 				"label":"AmplifySCIM3",
-				"logo":"https://URL3",
+				"logo":"https://cdn.pixabay.com/photo/2014/02/27/16/10/tree-276014__340.jpg",
 				"title":"AmplifySCIM3"
 			},
 			{
+				"uniqueId":"1273",
 				"label":"AmplifySCIM4",
-				"logo":"https://URL4",
+				"logo":"https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823__340.jpg",
 				"title":"AmplifySCIM4"
 			},
 			{
+				"uniqueId":"1298",
 				"label":"AmplifySCIM5",
-				"logo":"https://URL5",
+				"logo":"https://cdn.pixabay.com/photo/2014/04/14/20/11/pink-324175__340.jpg",
 				"title":"AmplifySCIM5"
+			},
+			{
+				"uniqueId":"5653",
+				"label":"AmplifySCIM6",
+				"logo":"https://cdn.pixabay.com/photo/2014/09/14/18/04/dandelion-445228__340.jpg",
+				"title":"AmplifySCIM6"
 			}
 		]
+		console.log(apps);
+		
+		$(".cancelForm").click(function(){
+			// console.log("click")
+			$(".addForm").toggle();
+			displayapps();
 
-		$.each(apps,function(count,value){
-			$(".arrCls").append("<div class='col-4 logo"+count+"'><ul class='list-group list-group-flush'><li class='list-group-item logo'"+count+">"+value.logo+"</div><div class='col-8 label"+count+"'>"+value.label+"</li></ul></div>")
-			// console.log(value.label);
-			// console.log(value.logo);
-			// console.log(value.title);
-		});
+		})
+
+		function displayapps(apps){
+			
+			$.each(apps,(count,value)=>{
+				$(".arrCls").append("<div class='form-group'><input type='hidden' name='uniqueId' class='form-control' id='uniqueId"+count+"' value='"+value.uniqueId+"'></div><div class='col-2 logo"+count+"'><ul class='list-group list-group-flush'><li class='list-group-item logo'"+count+"><img src="+value.logo+" width='40' height='40'></ul></li></div><div class='col-4 label"+count+"'><ul class='list-group list-group-flush'><li class='list-group-item label"+count+"'>"+value.label+"</li></ul></div><div class='col-3 editbtndiv"+count+"'><ul class='list-group list-group-flush'><li class='list-group-item editBtn"+count+"'><button id='"+count+"' class='btn btn-success editBtn'>Edit</button></li></ul></div><div class='col-3 delbtndiv"+count+"'><ul class='list-group list-group-flush'><li class='list-group-item deleteBtn"+count+"'><button id='"+count+"' class='btn btn-danger deleteBtn'>Delete</button></li></ul></div>")
+			});
+		}
+
+		function convertFormToJSON(form) {
+			const array = $("form").serializeArray(); // Encodes the set of form elements as an array of names and values.
+			const json = {};
+			// const uniqueId = Math.floor(1000 + Math.random() * 9000)
+			console.log(array[0].value);
+			
+			$.each(array, function () {
+				
+				json[this.name] = this.value || "";
+			});
+			// console.log("if contdition convertFormToJSON "+json)
+			return json;
+		}
+
+		function displayEditItems(rowId,editItem){
+			const label = apps[rowId].label;
+			const logo = apps[rowId].logo;
+			const title = apps[rowId].title;
+			$("#label").val(label)
+			$("#logo").val(logo)
+			$("#title").val(title)
+			$("#uniqueId").val(editItem)
+
+			// console.log("edit row function "+editItem);
+			
+		}
+
+		function editBtnClick(){
+			$(".editBtn").click(function(){
+				$(".addForm").toggle();
+				if(deleteMode == true)
+				{
+					$(".delconf").toggle();
+				}
+
+				rowId = $(this).attr("id");
+				editItem = apps[rowId].uniqueId;
+				editMode = true;
+				displayEditItems(rowId,editItem);
+			})
+		}
+		
+		function delBtnClick(){
+			$(".deleteBtn").click(function(){
+				$(".delconf").toggle();
+				var yesBtnVal = $(".yesBtn").text();
+				console.log("yesBtnVal : "+yesBtnVal)
+				rowId = $(this).attr("id");
+				$(".yesBtn").click(function(e){
+					if(yesBtnVal == 'Yes')
+					{
+						e.preventDefault();
+						// deleteBtn = true;
+						console.log("rowId : "+rowId)
+						apps.splice(rowId,1);
+						console.log("apps array : "+apps)
+						$(".arrCls").empty();
+						$(".delconf").toggle();
+						displayapps(apps)
+						editBtnClick();
+					}
+					else{
+						$(".delconf").toggle();
+					}
+				})	
+			})
+		}
+
+		$(".addBtn").click(function(){
+			addMode = true;
+			// editMode = false
+			$(".addForm").toggle();
+		})
+		
+		$(".submitForm").click(function(e){
+			e.preventDefault();
+			const form = $(e.target);
+			const json = convertFormToJSON(form);
+			console.log("edit mode : "+editMode)
+
+			if(editMode == true){
+				const jsonString = JSON.stringify(json)
+				const deserialiseJson = JSON.parse(jsonString);
+				var newArr = [];
+				newArr = apps.map(obj => {
+					if (obj.uniqueId === editItem) {
+						obj.label = deserialiseJson.label;
+						obj.logo = deserialiseJson.logo;
+						obj.title = deserialiseJson.title;
+					}
+				})
+				editMode = false;
+				$("#label").val("")
+				$("#logo").val("")
+				$("#title").val("")
+				$("#uniqueId").val("")
+			}
+			else{
+				apps.push(json);
+			}
+			$(".arrCls").empty();
+			displayapps(apps);
+			$(".addForm").toggle();
+			editBtnClick();
+			delBtnClick();
+			// $(".deleteBtn").click(function(){
+			// 	deleteBtn = true;
+			// 	rowId = $(this).attr("id");
+			// 	delItem = apps[rowId].uniqueId;
+			// 	apps.splice(rowId,1);
+			// 	$(".arrCls").empty();
+			// 	displayapps(apps)
+			// 	editBtnClick();
+			// })
+		})
+		displayapps(apps)
+		editBtnClick();
+		delBtnClick();
+		
+		
 
 		</script>
 	</body>
